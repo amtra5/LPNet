@@ -1,35 +1,36 @@
-﻿LongPollNet v1.0
-
-Requires NetCore v1.1
-https://github.com/amtra5/NetCore/releases/download/v1.1/NetCore.v1.1.zip
-
----------------
-
-About:
-
-LPNet: A simple HTTP long polling server
-LPClient: A class created by LPNet that represents a single client
-
----------------
-
-LPNet:
-Usage-
-Dim server = New LPNet()
-server.StartServer(port) - Starts a HTTP server on port, default 80
-server.StopServer() - Stops the server
-server.tblCLients - A hash table of current LPClient objects by GUID
-
-Sending Messages-
-'client is an instance of LPClient created by LPNet
-client.ID - Returns the client GUID
-client.SendMessage(ByVal data As String) - Send a message to the client
-
-Events-
-evtConnected(ByVal client As LPClient) - Triggered when a new client requests a GUID
-evtReceived(ByVal client As LPClient, ByVal data As String) - Triggered when a client sends a message to the server
-
-Setting up your client-
-1. Request a GUID by making a HTTP request to http://<server IP>/new. Your GUID will be returned in the message body.
-2. Sending a message to the server can be done by making a HTTP request to http://<server IP>/send/<your GUID>/<your message>. If it succeded, your message will be echoed back to you.
-3. Waiting for a message from the server can be done by making a HTTP request to http://<server IP>/poll/<your GUID>. The server will respond when a message is ready for you. It is recommended to make another polling request as soon as the first one is completed.
-4. To manually end your session, make a HTTP request to http://<server IP>/disconnect/<your GUID>. This is good practice, as it tells the server that you have quit.
+'LongPollNet v1.0
+'
+'Requires NetCore v1.1
+'https://github.com/amtra5/NetCore/releases/download/v1.1/NetCore.v1.1.zip
+'
+'---------------
+'
+'About:
+'
+'ChatServer: A simple HTTP long polling server
+'LPClient: A class created by ChatServer that represents a single client
+'
+'---------------
+'
+'ChatServer:
+'Usage-
+'Dim server = New ChatServer()
+'server.StartServer(port) - Starts a HTTP server on port, default 80
+'server.StopServer() - Stops the server
+'server.tblCLients - A hash table of current LPClient objects by GUID
+'
+'Sending Messages-
+''client is an instance of LPClient created by ChatServer
+'client.ID - Returns the client GUID
+'client.SendMessage(ByVal data As String) - Send a message to the client
+'
+'Events-
+'evtConnected(ByVal client As LPClient) - Triggered when a new client requests a GUID
+'evtDisconnected(ByVal client As LPClient) - Triggered when a client signals it is disconnecting
+'evtReceived(ByVal client As LPClient, ByVal data As String) - Triggered when a client sends a message to the server
+'
+'Setting up your client-
+'1. Request a GUID by making a HTTP request to http://<server IP>/new. Your GUID will be returned in the message body.
+'2. Sending a message to the server can be done by making a HTTP request to http://<server IP>/send/<your GUID>/<your message>. If it succeded, your message will be echoed back to you.
+'3. Waiting for a message from the server can be done by making a HTTP request to http://<server IP>/poll/<your GUID>. The server will respond when a message is ready for you. It is recommended to make another polling request as soon as the first one is completed.
+'4. To manually end your session, make a HTTP request to http://<server IP>/disconnect/<your GUID>. This is good practice, as it tells the server that you have quit.
