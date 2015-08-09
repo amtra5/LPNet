@@ -89,6 +89,12 @@ Public Class LPNet
                     gidClient = Guid.Parse(command(1))
                     If tblClients.ContainsKey(command(1)) = True Then
                         tblClients(command(1)).nctConnection = nctClient
+                        If tblClients(command(1)).strBuffer <> "" Then
+                            'If there is a message buffer, clear it
+                            tblClients(command(1)).nctConnection.Send("HTTP/1.1 200 OK" & vbCrLf & "Content-Type: text/plain" & vbCrLf & "Content-Length: " & (tblClients(command(1)).strBuffer.Length + 1).ToString & vbCrLf & "Connection: close" & vbCrLf & vbCrLf & tblClients(command(1)).strBuffer)
+                            tblClients(command(1)).strBuffer = ""
+                            tblClients(command(1)).nctConnection = Nothing
+                        End If
                     Else
                         Dim lpcThrowaway = New LPClient(nctClient, Guid.NewGuid)
                         lpcThrowaway.SendMessage("GUID Not Found")
@@ -115,6 +121,7 @@ End Class
 
 Public Class LPClient
     Private gidClient As Guid
+    Private strBuffer As String = ""
     Public nctConnection As NetClientObj
 
     Public Sub New(ByVal nctClient As NetClientObj, ByVal gidGUID As Guid)
@@ -123,7 +130,14 @@ Public Class LPClient
     End Sub
 
     Public Sub SendMessage(ByVal strData As String)
-        nctConnection.Send("HTTP/1.1 200 OK" & vbCrLf & "Content-Type: text/plain" & vbCrLf & "Content-Length: " & (strData.Length + 1).ToString & vbCrLf & "Connection: close" & vbCrLf & vbCrLf & strData & vbNewLine)
+        If IsNothing(nctConnection) Then
+            strBuffer = strBuffer & strData & vbCrLf
+        Else
+            strBuffer = strBuffer & strData
+            nctConnection.Send("HTTP/1.1 200 OK" & vbCrLf & "Content-Type: text/plain" & vbCrLf & "Content-Length: " & (strBuffer.Length + 1).ToString & vbCrLf & "Connection: close" & vbCrLf & vbCrLf & strBuffer & vbNewLine)
+            strBuffer = ""
+            nctConnection = Nothing
+        End If
     End Sub
 
     Public ReadOnly Property ID() As String
