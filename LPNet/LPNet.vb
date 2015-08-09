@@ -1,4 +1,4 @@
-﻿'LongPollNet v1.0
+'LongPollNet v1.0
 '
 'Requires NetCore v1.1
 'https://github.com/amtra5/NetCore/releases/download/v1.1/NetCore.v1.1.zip
@@ -7,25 +7,26 @@
 '
 'About:
 '
-'LPNet: A simple HTTP long polling server
-'LPClient: A class created by LPNet that represents a single client
+'ChatServer: A simple HTTP long polling server
+'LPClient: A class created by ChatServer that represents a single client
 '
 '---------------
 '
-'LPNet:
+'ChatServer:
 'Usage-
-'Dim server = New LPNet()
+'Dim server = New ChatServer()
 'server.StartServer(port) - Starts a HTTP server on port, default 80
 'server.StopServer() - Stops the server
 'server.tblCLients - A hash table of current LPClient objects by GUID
 '
 'Sending Messages-
-''client is an instance of LPClient created by LPNet
+''client is an instance of LPClient created by ChatServer
 'client.ID - Returns the client GUID
 'client.SendMessage(ByVal data As String) - Send a message to the client
 '
 'Events-
 'evtConnected(ByVal client As LPClient) - Triggered when a new client requests a GUID
+'evtDisconnected(ByVal client As LPClient) - Triggered when a client signals it is disconnecting
 'evtReceived(ByVal client As LPClient, ByVal data As String) - Triggered when a client sends a message to the server
 '
 'Setting up your client-
@@ -44,22 +45,12 @@ Public Class LPNet
 
     Public Sub StartServer(Optional ByVal intPort As Int32 = 80)
         nsvServer = New NetServer()
-        AddHandler nsvServer.evtClientConnected, AddressOf OnConnected
-        AddHandler nsvServer.evtClientDisconnected, AddressOf OnDisconnected
         AddHandler nsvServer.evtReceived, AddressOf OnReceived
         nsvServer.StartListener(intPort)
     End Sub
 
     Public Sub StopServer()
         nsvServer.StopListener()
-    End Sub
-
-    Private Sub OnConnected(ByVal nctClient As NetClientObj)
-        'RaiseEvent evtConnected(nctClient)
-    End Sub
-
-    Private Sub OnDisconnected(ByVal nctClient As NetClientObj)
-
     End Sub
 
     Private Sub OnReceived(ByVal nctClient As NetClientObj, ByVal strData As String)
